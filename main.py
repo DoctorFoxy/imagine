@@ -24,6 +24,33 @@ line()
 print(Style.RESET_ALL)
 
 #==================================================
+print("Target credits : Estimated Time : Extra Notes")
+print("3   :   ~27s : Not recommended compared to 4 credits")
+print("4   :   ~27s :")
+print("5   :   ~43s :")
+print("7   :   ~61s :")
+print("12  :   ~80s : Default and the recommended, enough for 1:1 ratio with the highest values")
+print("22  :   TBD  : TBD, may be EXTREMELY slow")
+print("TBD :   TBD  : TBD")
+
+credit_amount = 0
+def credit_input():
+    try:
+        credit_amount = input("\nHow many credits do you want? (default: 12) ")
+        if str.strip(credit_amount) == "":
+            credit_amount = 12
+        credit_amount = int(credit_amount)
+        if not credit_amount == 3 and not credit_amount == 4 and not credit_amount == 5 and not credit_amount == 7 and not credit_amount == 12 and not credit_amount == 22:
+            print("Invalid amount of credits!")
+            credit_input()
+            return
+    except:
+        print("Invalid amount of credits!")
+        credit_input()
+
+credit_input()
+
+#==================================================
 startTime = time.time()
 #================================================== TEMPORARY MAIL-STUFF
 API = 'https://www.1secmail.com/api/v1/'
@@ -99,19 +126,13 @@ import time
 from selenium import webdriver
 from selenium.webdriver.edge.service import Service
 from selenium.webdriver.common.by import By
+
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions
+
+
 print(Fore.YELLOW)
-
-config_name = 'msedgedriver.exe'
-
-# determine if application is a script file or frozen exe
-if getattr(sys, 'frozen', False):
-    application_path = os.path.dirname(sys.executable)
-elif __file__:
-    application_path = os.path.dirname(__file__)
-
-config_path = os.path.join(application_path, config_name)
-
-s = Service(config_path)
+s = Service("./msedgedriver.exe")
 driver = webdriver.Edge(service = s) #launch browser
 driver.get("https://creator.nightcafe.studio/login?view=password-signup") #goto site
 
@@ -179,56 +200,106 @@ while not loaded:
     time.sleep(0.2)
 
 #================================================== GET FREE CREDIT
-time.sleep(2)
-driver.get("https://creator.nightcafe.studio/account/edit-profile")
+if not credit_amount == 3:
+    time.sleep(2)
+    driver.get("https://creator.nightcafe.studio/account/edit-profile")
 
-while not loaded:
-    try:
-        driver.find_element(By.CLASS_NAME,"css-qzr1ap").click()
-        break
-    except:
-        print("Page not loaded")
-    time.sleep(0.2)
+    while not loaded:
+        try:
+            driver.find_element(By.CLASS_NAME,"css-qzr1ap").click()
+            break
+        except:
+            print("Page not loaded")
+        time.sleep(0.2)
 
-while not loaded:
-    try:
-        driver.find_element(By.CLASS_NAME,"css-hvws00").click()
-        break
-    except:
-        print("Image button not responding")
-    time.sleep(0.2)
+    while not loaded:
+        try:
+            driver.find_element(By.CLASS_NAME,"css-hvws00").click()
+            break
+        except:
+            print("Image button not responding")
+        time.sleep(0.2)
 
-while not loaded:
-    try:
-        driver.find_element(By.CLASS_NAME,"css-tpvdoh").click()
-        break
-    except:
-        print("Done Button not responding")
-    time.sleep(0.2)
+    while not loaded:
+        try:
+            driver.find_element(By.CLASS_NAME,"css-tpvdoh").click()
+            break
+        except:
+            print("Done Button not responding")
+        time.sleep(0.2)
 
-while not loaded:
-    try:
-        driver.find_element(By.NAME,"username").send_keys(mail[0:10])
-        break
-    except:
-        print("Username input not found")
-    time.sleep(0.2)
-    
-driver.find_element(By.NAME,"displayName").send_keys("t")
+    while not loaded:
+        try:
+            driver.find_element(By.NAME,"username").send_keys(mail[0:10])
+            break
+        except:
+            print("Username input not found")
+        time.sleep(0.2)
+        
+    driver.find_element(By.NAME,"displayName").send_keys("t")
 
-driver.find_element(By.NAME,"bio").send_keys("t")
+    driver.find_element(By.NAME,"bio").send_keys("t")
 
-driver.find_element(By.CLASS_NAME,"css-17tew97").click()
+    driver.find_element(By.CLASS_NAME,"css-17tew97").click()
+
+# aqualxx was here
+#================================================== MORE FREE CREDIT
+if not credit_amount == 3 and not credit_amount == 4:
+    like_amount = 0
+    if credit_amount == 5:
+        like_amount = 10
+    if credit_amount == 7:
+        like_amount = 50
+    if credit_amount == 12:
+        like_amount = 100
+    if credit_amount == 22:
+        like_amount = 500
+    time.sleep(2)
+    driver.get("https://creator.nightcafe.studio/recent")
+
+    WebDriverWait(driver, 15).until(expected_conditions.element_to_be_clickable((By.CLASS_NAME, 'css-vkhmfo')))
+
+    # def like_post_no(index):
+    #    element = driver.find_elements(By.XPATH,'//div[@class="css-jcvd79"]/button[1][@title="Like"]')[index]
+    #    element.click()
+
+    post_num = 0
+    while True:
+        try:
+            element = driver.find_elements(By.XPATH,'//div[@class="css-jcvd79"]/button[1][@title="Like"]')[0]
+            element.click()
+            driver.execute_script("""
+            var element = arguments[0];
+            element.parentNode.removeChild(element);
+            """, element)
+
+            post_num = post_num + 1
+            if (post_num >= like_amount):
+                break
+        except:
+            print("Can't find like button")
+            #driver.execute_script("window.scrollTo(0, document.body.scrollHeight-100);")
+            time.sleep(0.3)
 
 time.sleep(2)
 driver.get("https://creator.nightcafe.studio/create/text-to-image")
 
-print(Style.RESET_ALL)
+# print(Style.RESET_ALL)
 #======================================== COMPLETED
+
+f = open("accounts.txt", "a")
 print(Fore.GREEN)
 print("============================")
 print("Account creation succesfull.")
 print("Email:", mail)
 print("Password:", password)
 print("Time elapsed:", time.time() - startTime, "seconds")
+print("Account saved to accounts.txt")
 print("============================")
+
+f.write("============================\n")
+f.write("Email: "+mail+"\n")
+f.write("Password: "+password+"\n")
+f.write("============================\n")
+
+f.close()
